@@ -135,9 +135,7 @@ public class Lights extends HttpServlet {
           }
          
           JSONParser parser = new JSONParser();
-          System.out.println("Past parser");
           JSONObject jsonObject =  (JSONObject) parser.parse(jb.toString());
-          System.out.println("Past parse");
           
           
           db.changeLightConfig(jsonObject);

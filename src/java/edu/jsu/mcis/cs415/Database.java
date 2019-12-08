@@ -255,20 +255,20 @@ public class Database {
             String columnValue = rs.getString(i);
             String columnHeading = rsmd.getColumnName(i);
 
-            //We ignore the ID as it is given already
-            if(!columnHeading.equals("id")){
+            //Append data to the array
+            lightInfo.put(columnHeading, columnValue);
 
-                //Append data to the array
-                lightInfo.put(columnHeading, columnValue);
-
-            }
         }
         
         //Add the info to the JSON Object
-        lightInfo.put("state",getStateInfo(rs.getString("typeid"),id));
+        //lightInfo.put("state",getStateInfo(rs.getString("typeid"),id));
         
-        //Delete the current light info from the database
-        deleteLight(id);
+        
+        //Set the new name of the light
+        lightInfo.put("name", json.get("name"));
+        
+        /*
+        THIS IS AN OLD VERSION THAT LET YOU UPDATE MORE THAN THE LIGHT NAME
         
         //Change the info depending on the input
         for(Object key: json.keySet()){
@@ -285,9 +285,32 @@ public class Database {
 
                 }
             }
+            */
         
         //Update the light info
-        addLight(lightInfo);
+        updateLight(lightInfo);
+    }
+    
+    private void updateLight(JSONObject lightInfo) throws SQLException{
+        
+        System.out.println(lightInfo);
+        System.out.println("UPDATING LIGHT");
+        //Make update query
+        String query = "UPDATE homeauto_db.light SET name = ?, manufacturer = ?, model = ?, hardwareid = ?, version = ?, typeid = ? WHERE homeauto_db.light.id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(query);
+        
+        //Set variables in query
+        pstmt.setString(1, (String) lightInfo.get("name"));
+        pstmt.setString(2, (String) lightInfo.get("manufacturer"));
+        pstmt.setString(3, (String) lightInfo.get("model"));
+        pstmt.setString(4, (String) lightInfo.get("hardwareid"));
+        pstmt.setString(5, (String) lightInfo.get("version"));
+        pstmt.setString(6, (String) lightInfo.get("typeid"));
+        pstmt.setString(7,(String) lightInfo.get("id"));
+        
+        System.out.println(pstmt);
+        //Update info
+        pstmt.executeUpdate();
     }
     
 }
